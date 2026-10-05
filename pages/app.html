@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Рабочее пространство — Signal</title>
+    <meta
+      name="description"
+      content="Инструменты Signal: ниши, оптимизация, конкуренты, идеи и статистика."/>
+    <link rel="icon" href="../assets/favicon.svg" />
+    <link rel="stylesheet" href="../assets/css/base.css" />
+    <link rel="stylesheet" href="../assets/css/app.css" />
+    <script defer src="../assets/js/shared.js"></script>
+    <script defer src="../assets/js/data.js"></script>
+    <script defer src="../assets/js/app.js"></script>
+  </head>
+  <body class="workspace">
+    <a class="skip-link" href="#workspace-content">К инструментам</a>
+    <aside class="sidebar">
+      <a class="logo" href="../index.html"><span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i></span>signal<span class="logo-dot">.</span></a><span class="sidebar-caption">ВАШЕ ПРОСТРАНСТВО</span>
+      <nav aria-label="Инструменты" id="app-nav">
+        <a href="#overview" data-route="overview"><span>▦</span>Обзор</a>
+        <a href="#niches" data-route="niches"><span>⌕</span>Поиск ниш</a>
+        <a href="#optimize" data-route="optimize"><span>✧</span>Оптимизация</a>
+        <a href="#competitors" data-route="competitors"><span>▥</span>Конкуренты</a>
+        <a href="#ideas" data-route="ideas"><span>☼</span>Идеи для видео</a>
+        <a href="#analytics" data-route="analytics"><span>↗</span>Статистика канала</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-tip">
+          <span>МАЛЕНЬКИЙ СОВЕТ</span>
+          <p>Лучший момент для первого видео — когда есть идея.</p>
+          <a href="#ideas">Найти идею ↗</a>
+        </div>
+        <a href="../index.html" class="sidebar-home">← На главную</a>
+      </div>
+    </aside>
+    <div class="workspace-main">
+      <header class="app-header">
+        <span id="breadcrumb">Рабочее пространство <b>/ Обзор</b></span>
+        <div class="account">
+          <span class="demo-badge">Демо-режим</span><span class="account-avatar" id="avatar">А</span><span id="account-name">Автор</span><button type="button" id="logout" title="Выйти из демо">
+            Выйти
+          </button>
+        </div>
+      </header>
+      <main id="workspace-content" tabindex="-1"></main>
+      <footer class="app-footer">
+        Signal · Ваш следующий шаг на YouTube
+        <span>Данные для демонстрации, без подключения к YouTube</span>
+      </footer>
+    </div>
+    <div id="toast" class="toast" role="status" hidden></div>
+  </body>
+</html>

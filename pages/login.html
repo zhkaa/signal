@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Вход — Signal</title>
+    <meta
+      name="description"
+      content="Войдите в Signal и продолжите работу над своим YouTube-каналом."/>
+    <link rel="icon" href="../assets/favicon.svg" />
+    <link rel="stylesheet" href="../assets/css/base.css" />
+    <link rel="stylesheet" href="../assets/css/auth.css" />
+    <script defer src="../assets/js/shared.js"></script>
+    <script defer src="../assets/js/auth.js"></script>
+  </head>
+  <body class="auth-page">
+    <header class="auth-header">
+      <a class="logo" href="../index.html"><span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i></span>signal<span class="logo-dot">.</span></a>
+      <a href="../index.html" class="back-link">← На главную</a>
+    </header>
+    <main class="auth-main">
+      <section class="auth-form-wrap">
+        <h1>Войдите в аккаунт</h1>
+        <p class="auth-intro">
+          Если у вас ещё нет аккаунта,<br />перейдите на вкладку Регистрация<br />и
+          начните свой путь на YouTube.
+        </p>
+        <nav class="auth-tabs" aria-label="Доступ к аккаунту">
+          <a href="register.html">Регистрация</a>
+          <a href="login.html" aria-current="page">Вход</a>
+        </nav>
+        <form id="auth-form" data-mode="login">
+          <div class="field">
+            <label for="email">Электронная почта или логин</label><input
+              id="email"
+              name="email"
+              autocomplete="username"
+              required
+              maxlength="120"/>
+          </div>
+          <div class="field password-field">
+            <label for="password">Пароль</label>
+            <div class="password-input">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                minlength="8"/><button
+                type="button"
+                class="password-toggle"
+                aria-label="Показать пароль"
+                aria-pressed="false">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="23"
+                  height="23"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  aria-hidden="true">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <button class="forgot-link" type="button" id="forgot-password">
+            Забыли пароль?
+          </button>
+          <p id="auth-error" class="form-error" role="alert" hidden></p>
+          <button class="button button-dark auth-submit" type="submit">
+            Войти
+          </button>
+        </form>
+        <p class="demo-disclaimer">
+          Демонстрационный вход: используйте любые данные и пароль от 8
+          символов. Пароль не сохраняется и никуда не отправляется.
+        </p>
+        <div class="auth-divider">Или познакомьтесь с Signal</div>
+        <a class="button button-outline demo-button" href="app.html?demo=1">Открыть демо без регистрации <span>↗</span></a>
+        <div class="auth-note">
+          <span aria-hidden="true">ⓘ</span>
+          <p>
+            Ваш первый шаг к своему каналу.<br /><b>Всё получится — начните с идеи.</b>
+          </p>
+        </div>
+      </section>
+    </main>
+    <footer class="auth-footer">
+      © 2026 Signal <span>Создавайте то, что вам близко.</span>
+    </footer>
+    <div class="toast" id="toast" role="status" hidden></div>
+  </body>
+</html>
