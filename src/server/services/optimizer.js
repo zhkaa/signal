@@ -1,7 +1,3 @@
-/**
- * Формирует детерминированные рекомендации без внешней AI-модели.
- * Одинаковые параметры дают одинаковый результат, в том числе при сохранении проекта.
- */
 export function optimize(input) {
   const topic = String(input.topic || '').trim();
   const kind = input.kind || 'video';
