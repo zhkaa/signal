@@ -1,0 +1,135 @@
+/* Общие кнопки, формы и обратная связь для всех экранов. */
+.primary,
+.secondary,
+.hero-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 15px 20px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 0;
+}
+.primary {
+  background: var(--color-lime);
+}
+.primary:hover {
+  background: #b3de08;
+}
+.secondary {
+  background: white;
+  border: 1px solid var(--color-line);
+}
+.hero-link {
+  background: transparent;
+  padding-inline: 0;
+}
+.text-button {
+  border: 0;
+  background: none;
+  padding: 12px;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+.panel {
+  background: white;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 26px;
+  overflow-wrap: anywhere;
+}
+.panel h2 {
+  font-size: 24px;
+  letter-spacing: -0.03em;
+}
+.panel h3 {
+  font-size: 21px;
+}
+.panel h4 {
+  font-size: 13px;
+  margin: 24px 0 10px;
+}
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 22px 0;
+}
+input,
+select {
+  width: 100%;
+  display: block;
+  padding: 13px;
+  margin-top: 8px;
+  border: 1px solid #c9cbc2;
+  background: #fff;
+  border-radius: 4px;
+  color: inherit;
+}
+.feedback {
+  background: #ecf4d2;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+.error {
+  color: #942f27;
+  background: #ffebe7;
+}
+.empty-state {
+  padding: 58px 20px;
+  text-align: center;
+  color: var(--color-muted);
+}
+.empty-state > span > .icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+.empty-state h3 {
+  color: var(--color-ink);
+  margin-bottom: 12px;
+}
+.empty-state p {
+  font-size: 13px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+.small-badge {
+  background: var(--color-lime);
+  padding: 5px 8px;
+  font-size: 10px;
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #15181066;
+  backdrop-filter: blur(5px);
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.modal {
+  width: min(460px, 100%);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 6px;
+  border: 0;
+  background: transparent;
+}
+.modal h2 {
+  padding-right: 24px;
+}

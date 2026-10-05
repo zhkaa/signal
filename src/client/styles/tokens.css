@@ -1,0 +1,16 @@
+/* Общая палитра и размеры. Здесь меняется визуальная основа проекта. */
+:root {
+  --color-paper: #f7f8f5;
+  --color-surface: #ffffff;
+  --color-ink: #191b18;
+  --color-muted: #687062;
+  --color-line: #dddcd5;
+  --color-lime: #b7ef35;
+  --color-hero: #20271f;
+  --color-on-dark: #f5f7f0;
+  --color-muted-on-dark: #bec8b7;
+  --color-accent-soft: #edf4df;
+  --radius: 8px;
+  --content-width: 1280px;
+  --font-body: 'Manrope Variable', Arial, sans-serif;
+}
