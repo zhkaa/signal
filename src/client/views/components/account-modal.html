@@ -1,0 +1,55 @@
+<!-- Форма аккаунта использует auth.js; пароль не сохраняется на клиенте. -->
+<div class="modal-backdrop" x-show="authOpen" x-cloak @keydown.escape.window="authOpen = false">
+  <section
+    class="modal panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="account-title"
+    @click.outside="authOpen = false"
+  >
+    <button class="close" @click="authOpen = false" aria-label="Закрыть">
+      <svg class="icon" aria-hidden="true" focusable="false">
+        <use href="/assets/icons.svg#x"></use>
+      </svg>
+    </button>
+    <h2 id="account-title">Твоё пространство Signal</h2>
+    <p x-show="demo" class="muted">
+      Вы в деморежиме. Все инструменты доступны без регистрации. Облачные аккаунты станут доступны
+      после подключения Supabase.
+    </p>
+    <div x-show="account">
+      <p x-text="account"></p>
+      <button class="secondary" @click="logout(); authOpen = false">Выйти</button>
+    </div>
+    <form x-show="!demo && !account" @submit.prevent="auth()">
+      <label>
+        Email
+        <input type="email" x-model="email" required autocomplete="email" />
+      </label>
+      <label>
+        Пароль
+        <input
+          type="password"
+          x-model="password"
+          minlength="8"
+          maxlength="128"
+          required
+          autocomplete="current-password"
+        />
+      </label>
+      <p class="error" x-show="error" x-text="error"></p>
+      <p x-show="notice" x-text="notice"></p>
+      <button
+        class="primary full"
+        :disabled="busy"
+        x-text="authAction === 'login' ? 'Войти' : 'Создать аккаунт'"
+      ></button>
+      <button
+        type="button"
+        class="text-button"
+        @click="authAction = authAction === 'login' ? 'register' : 'login'"
+        x-text="authAction === 'login' ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'"
+      ></button>
+    </form>
+  </section>
+</div>

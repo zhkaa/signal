@@ -1,0 +1,17 @@
+<footer class="site-footer">
+  <span>
+    Signal by
+    <strong>Obsidia</strong>
+    · 2026
+  </span>
+  <!-- Этот фрагмент обновляется HTMX без перезагрузки страницы. -->
+  <span
+    class="service-status"
+    hx-get="/fragments/status"
+    hx-trigger="load, every 60s"
+    hx-swap="innerHTML"
+  >
+    Проверяем подключение…
+  </span>
+  <span>Создавай в своём темпе.</span>
+</footer>

@@ -1,0 +1,38 @@
+<!-- Экран: projects. Состояние и действия описаны в js/features/. -->
+<section x-show="page === 'projects'" x-cloak>
+  <div class="feedback" x-show="demo">
+    Демопроекты хранятся в памяти сервера: они исчезнут после его перезапуска или завершения
+    демосессии.
+  </div>
+  <div class="empty-state panel" x-show="!saved.length">
+    <span>
+      <svg class="icon" aria-hidden="true" focusable="false">
+        <use href="/assets/icons.svg#folder-open"></use>
+      </svg>
+    </span>
+    <h3>Здесь будут твои идеи</h3>
+    <p>Сохрани результат оптимизации, чтобы вернуться к нему.</p>
+    <button class="primary" @click="go('optimizer')">
+      Создать проект
+      <svg class="icon" aria-hidden="true" focusable="false">
+        <use href="/assets/icons.svg#arrow-up-right"></use>
+      </svg>
+    </button>
+  </div>
+  <div class="results-grid">
+    <template x-for="p in saved" :key="p.id">
+      <article class="panel">
+        <span
+          class="eyebrow"
+          x-text="({video:'ВИДЕО',channel:'КАНАЛ',stream:'ТРАНСЛЯЦИЯ'})[p.kind]"
+        ></span>
+        <h3 x-text="p.title"></h3>
+        <p class="muted small" x-text="new Date(p.created_at).toLocaleDateString('ru-RU')"></p>
+        <div class="actions">
+          <button class="secondary" @click="openProject(p)">Открыть</button>
+          <button class="text-button" @click="remove(p.id)" :disabled="busy">Удалить</button>
+        </div>
+      </article>
+    </template>
+  </div>
+</section>

@@ -1,0 +1,53 @@
+<!-- Общая навигация остаётся доступной на каждом экране. -->
+<a class="skip-link" href="#main-content">Перейти к содержимому</a>
+<header class="site-header">
+  <div class="container header-row">
+    <a class="brand" href="/" aria-label="Signal by Obsidia">
+      <img src="/assets/signal-logo.svg" width="50" height="54" alt="" />
+      <span class="brand-wordmark">
+        <span>Signal</span>
+        <span class="brand-period" aria-hidden="true">.</span>
+      </span>
+    </a>
+    <span class="header-caption">ТВОЙ КОМФОРТНЫЙ СТАРТ НА YOUTUBE</span>
+    <div class="header-actions">
+      <span class="mode-pill" x-text="demo ? 'ДЕМО' : 'LIVE'"></span>
+      <button
+        class="account-button"
+        @click="authOpen = true"
+        x-text="account ? 'Мой аккаунт' : 'Войти'"
+      ></button>
+      <button
+        class="mobile-toggle"
+        @click="mobile = !mobile"
+        :aria-expanded="mobile"
+        aria-controls="main-nav"
+        aria-label="Открыть меню"
+      >
+        <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#menu"></use></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="navigation-bar">
+  <nav
+    id="main-nav"
+    class="container navigation"
+    :class="{ open: mobile }"
+    aria-label="Основная навигация"
+  >
+    <template x-for="item in nav" :key="item.id">
+      <button
+        @click="go(item.id)"
+        :disabled="busy"
+        :class="{ active: page === item.id }"
+        :aria-current="page === item.id ? 'page' : null"
+      >
+        <svg class="icon" aria-hidden="true">
+          <use :href="'/assets/icons.svg#' + item.icon"></use>
+        </svg>
+        <span x-text="item.name"></span>
+      </button>
+    </template>
+  </nav>
+</div>

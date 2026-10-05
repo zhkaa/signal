@@ -1,0 +1,166 @@
+<!-- Главная: крупная типографика, графитовый первый экран и каталог инструментов. -->
+<section x-show="page === 'dashboard'" class="dashboard">
+  <div class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">SIGNAL BY OBSIDIA / ДЛЯ ТЕХ, КТО СОЗДАЁТ</p>
+      <h1>
+        ТВОЙ КОНТЕНТ.
+        <br />
+        ТВОИ ПРАВИЛА.
+        <br />
+        <span>ТВОЙ SIGNAL.</span>
+      </h1>
+      <p class="hero-description">
+        Начни на YouTube в своём темпе.
+        <br />
+        Мы поможем с тем, что стоит за кадром.
+      </p>
+      <div class="hero-actions">
+        <button class="primary" @click="go('optimizer')">
+          Создать первый проект
+          <svg class="icon" aria-hidden="true">
+            <use href="/assets/icons.svg#arrow-up-right"></use>
+          </svg>
+        </button>
+        <button class="hero-link" @click="go('niches')">
+          Найти свою нишу
+          <svg class="icon" aria-hidden="true">
+            <use href="/assets/icons.svg#arrow-right"></use>
+          </svg>
+        </button>
+      </div>
+      <p class="hero-note">От первой идеи — к контенту, который хочется смотреть.</p>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="art-frame"></div>
+      <div class="art-disc"></div>
+      <img src="/assets/signal-logo.svg" alt="" />
+      <span class="art-label top">ЕСТЬ ИДЕЯ?</span>
+      <span class="art-label bottom">
+        ДАЙ ЕЙ СИГНАЛ
+        <svg class="icon"><use href="/assets/icons.svg#arrow-up-right"></use></svg>
+      </span>
+      <svg class="art-spark icon"><use href="/assets/icons.svg#sparkles"></use></svg>
+    </div>
+  </div>
+  <div class="intro-strip">
+    <span>МЕНЬШЕ РУТИНЫ.</span>
+    <span>БОЛЬШЕ ТВОРЧЕСТВА.</span>
+    <span class="strip-note">
+      Всё для следующего шага
+      <svg class="icon" aria-hidden="true">
+        <use href="/assets/icons.svg#arrow-down-left"></use>
+      </svg>
+    </span>
+  </div>
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">ВЫБЕРИ НАПРАВЛЕНИЕ</p>
+      <h2>
+        ЧЕМ ЗАЙМЁМСЯ
+        <br />
+        СЕГОДНЯ?
+      </h2>
+    </div>
+    <p>
+      Четыре инструмента.
+      <br />
+      Одна большая идея — твоя.
+    </p>
+  </div>
+  <div class="tool-grid">
+    <button class="tool-card featured" @click="go('optimizer')">
+      <div class="card-top">
+        <span>01 / УПАКОВКА КОНТЕНТА</span>
+        <svg class="icon" aria-hidden="true">
+          <use href="/assets/icons.svg#arrow-up-right"></use>
+        </svg>
+      </div>
+      <svg class="tool-icon icon" aria-hidden="true">
+        <use href="/assets/icons.svg#sparkles"></use>
+      </svg>
+      <h3>Оптимизация</h3>
+      <p>
+        Название, описание и теги.
+        <br />
+        Дай своей идее точную форму.
+      </p>
+      <div class="card-footer">Канал · Видео · Трансляция</div>
+    </button>
+    <button class="tool-card" @click="go('competitors')">
+      <div class="card-top">
+        <span>02 / ИССЛЕДОВАНИЕ</span>
+        <svg class="icon" aria-hidden="true">
+          <use href="/assets/icons.svg#arrow-up-right"></use>
+        </svg>
+      </div>
+      <svg class="tool-icon icon" aria-hidden="true">
+        <use href="/assets/icons.svg#users-round"></use>
+      </svg>
+      <h3>Конкуренты</h3>
+      <p>
+        Узнай, что делают другие.
+        <br />
+        Найди собственный подход.
+      </p>
+      <div class="card-footer">Каналы · Аудитория · Контент</div>
+    </button>
+    <button class="tool-card" @click="go('niches')">
+      <div class="card-top">
+        <span>03 / НОВЫЕ ВОЗМОЖНОСТИ</span>
+        <svg class="icon" aria-hidden="true">
+          <use href="/assets/icons.svg#arrow-up-right"></use>
+        </svg>
+      </div>
+      <svg class="tool-icon icon" aria-hidden="true">
+        <use href="/assets/icons.svg#search"></use>
+      </svg>
+      <h3>Поиск ниш</h3>
+      <p>
+        Исследуй темы, в которых
+        <br />
+        есть место твоему голосу.
+      </p>
+      <div class="card-footer">Темы · Идеи · Направления</div>
+    </button>
+    <button class="tool-card" @click="go('analytics')">
+      <div class="card-top">
+        <span>04 / ПУБЛИЧНЫЕ ДАННЫЕ</span>
+        <svg class="icon" aria-hidden="true">
+          <use href="/assets/icons.svg#arrow-up-right"></use>
+        </svg>
+      </div>
+      <svg class="tool-icon icon" aria-hidden="true">
+        <use href="/assets/icons.svg#chart-no-axes-combined"></use>
+      </svg>
+      <h3>Статистика</h3>
+      <p>
+        Посмотри на канал в цифрах.
+        <br />
+        Пойми, куда двигаться дальше.
+      </p>
+      <div class="card-footer">Подписчики · Просмотры · Видео</div>
+    </button>
+  </div>
+  <div class="start-banner">
+    <div>
+      <p class="eyebrow">НЕ ОБЯЗАТЕЛЬНО ЗНАТЬ ВСЁ. ДОСТАТОЧНО НАЧАТЬ.</p>
+      <h2>
+        ПЕРВОЕ ВИДЕО
+        <br />
+        НАЧИНАЕТСЯ С ИДЕИ.
+      </h2>
+    </div>
+    <div>
+      <p
+        x-text="demo ? 'Попробуй инструменты без регистрации. Демонстрационные данные всегда отмечены.' : 'Сохраняй идеи в своём аккаунте и возвращайся к ним в удобное время.'"
+      ></p>
+      <button class="primary" @click="go('optimizer')">
+        Начать создавать
+        <svg class="icon" aria-hidden="true">
+          <use href="/assets/icons.svg#arrow-up-right"></use>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>

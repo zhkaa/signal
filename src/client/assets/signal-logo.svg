@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="235 155 650 725" role="img" aria-label="Signal logo">
+  <defs>
+    <linearGradient id="signalGradient" x1="0" y1="0" x2="0.92" y2="1">
+      <stop offset="0%" stop-color="#B7FF14"/>
+      <stop offset="48%" stop-color="#72F10C"/>
+      <stop offset="100%" stop-color="#18D73D"/>
+    </linearGradient>
+
+    <clipPath id="logoClip">
+      <path d="M360 180
+               C310 150 250 185 250 245
+               L250 780
+               C250 845 320 885 378 852
+               L825 594
+               C883 560 883 478 825 444
+               L378 186
+               C372 183 366 180 360 180Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Main play/analytics mark -->
+  <path d="M360 180
+           C310 150 250 185 250 245
+           L250 780
+           C250 845 320 885 378 852
+           L825 594
+           C883 560 883 478 825 444
+           L378 186
+           C372 183 366 180 360 180Z"
+        fill="url(#signalGradient)"/>
+
+  <!-- Subtle darker lower section, matching the raster logo -->
+  <g clip-path="url(#logoClip)">
+    <rect x="220" y="595" width="700" height="330" fill="#00B82A" opacity="0.22"/>
+
+    <!-- Analytics bars -->
+    <rect x="300" y="610" width="116" height="310" rx="58" fill="#FFFFFF"/>
+    <rect x="460" y="500" width="116" height="360" rx="58" fill="#FFFFFF"/>
+    <rect x="620" y="380" width="124" height="430" rx="62" fill="#FFFFFF"/>
+  </g>
+</svg>

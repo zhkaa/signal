@@ -1,0 +1,78 @@
+<!-- Экран: optimizer. Состояние и действия описаны в js/features/. -->
+<section x-show="page === 'optimizer'" x-cloak>
+  <div class="editor-grid">
+    <form class="panel" @submit.prevent="generate()">
+      <h2>Упакуем твою идею</h2>
+      <p class="muted">Практические шаблоны для старта. Без обещаний волшебных охватов.</p>
+      <label>
+        Что создаём?
+        <select x-model="kind">
+          <option value="video">Видео</option>
+          <option value="channel">Канал</option>
+          <option value="stream">Трансляцию</option>
+        </select>
+      </label>
+      <label>
+        Тема контента
+        <input
+          x-model="topic"
+          placeholder="Например, мобильная съёмка"
+          minlength="3"
+          maxlength="160"
+          required
+        />
+      </label>
+      <label>
+        Для кого?
+        <input x-model="audience" placeholder="Начинающих авторов" maxlength="100" />
+      </label>
+      <button
+        class="primary full"
+        :disabled="busy"
+        x-text="busy ? 'Готовим…' : 'Подготовить рекомендации'"
+      ></button>
+    </form>
+    <div class="panel result-panel">
+      <div x-show="!result" class="empty-state">
+        <span>
+          <svg class="icon" aria-hidden="true" focusable="false">
+            <use href="/assets/icons.svg#sparkles"></use>
+          </svg>
+        </span>
+        <h3>Дай идее форму</h3>
+        <p>
+          Расскажи о теме — здесь появятся варианты
+          <br />
+          названия, описание и список тегов.
+        </p>
+      </div>
+      <template x-if="result">
+        <div>
+          <div class="section-heading">
+            <h2>Твой стартовый набор</h2>
+            <span class="small-badge">ГОТОВО</span>
+          </div>
+          <h4>Варианты названия</h4>
+          <template x-for="title in result.titles">
+            <div class="title-option" x-text="title"></div>
+          </template>
+          <h4>Описание</h4>
+          <p class="description" x-text="result.description"></p>
+          <h4>Теги</h4>
+          <div class="tags">
+            <template x-for="tag in result.tags"><span x-text="tag"></span></template>
+          </div>
+          <h4>Перед публикацией</h4>
+          <ul class="checklist">
+            <template x-for="item in result.checklist"><li x-text="item"></li></template>
+          </ul>
+          <p class="muted small" x-text="result.note"></p>
+          <div class="actions">
+            <button class="primary" @click="save()" :disabled="busy">Сохранить проект</button>
+            <button class="secondary" @click="copy()" :disabled="busy">Копировать</button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</section>

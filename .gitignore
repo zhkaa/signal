@@ -1,0 +1,10 @@
+node_modules/
+.npm-cache/
+.env
+.env.*
+!.env.example
+coverage/
+*.log
+
+# Generated client output; edit src/client instead.
+public/

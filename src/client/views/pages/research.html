@@ -1,0 +1,96 @@
+<!-- Экран: research. Состояние и действия описаны в js/features/. -->
+<section x-show="['competitors','niches','analytics'].includes(page)" x-cloak>
+  <div class="panel search-panel">
+    <div>
+      <h2
+        x-text="page === 'niches' ? 'Найди тему для следующего видео' : page === 'analytics' ? 'Посмотри на канал в цифрах' : 'Узнай, кто создаёт рядом с тобой'"
+      ></h2>
+      <p
+        class="muted"
+        x-text="page === 'niches' ? 'Сравнение тем по средней просматриваемости выборки. Это ориентир, а не оценка конкуренции.' : 'Поиск по названию или @handle. Публичные показатели YouTube.'"
+      ></p>
+    </div>
+    <form class="search-form" @submit.prevent="search()">
+      <input
+        x-model="query"
+        :placeholder="page === 'niches' ? 'Тема, например: видеомонтаж' : 'Название канала или тема'"
+        aria-label="Поисковый запрос"
+        required
+        minlength="2"
+        maxlength="100"
+      />
+      <button class="primary" :disabled="busy" x-text="busy ? 'Ищем…' : 'Исследовать'"></button>
+    </form>
+    <p class="small muted" x-show="demo">Деморежим: поиск покажет фиксированные учебные примеры.</p>
+  </div>
+  <div class="results-grid">
+    <template x-for="c in channelRows" :key="c.id">
+      <article class="panel channel-card">
+        <div class="channel-avatar" :style="`background:${c.color}`" x-text="c.title[0]"></div>
+        <h3 x-text="c.title"></h3>
+        <p class="muted" x-text="c.handle"></p>
+        <dl>
+          <div>
+            <dt>Подписчики</dt>
+            <dd x-text="num(c.subscribers)"></dd>
+          </div>
+          <div>
+            <dt>Просмотры</dt>
+            <dd x-text="num(c.views)"></dd>
+          </div>
+          <div>
+            <dt>Видео</dt>
+            <dd x-text="num(c.videos)"></dd>
+          </div>
+        </dl>
+        <a
+          x-show="!demo"
+          :href="'https://www.youtube.com/channel/' + encodeURIComponent(c.id)"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Открыть канал
+          <svg class="icon" aria-hidden="true" focusable="false">
+            <use href="/assets/icons.svg#arrow-up-right"></use>
+          </svg>
+        </a>
+        <span class="small muted" x-show="demo">Учебный пример · не реальный канал</span>
+      </article>
+    </template>
+    <template x-for="(n,i) in nicheRows" :key="n.title">
+      <article class="panel niche-card">
+        <span class="rank" x-text="'0' + (i+1)"></span>
+        <h3 x-text="n.title"></h3>
+        <dl>
+          <div>
+            <dt>Средние просмотры</dt>
+            <dd x-text="num(n.averageViews)"></dd>
+          </div>
+          <div>
+            <dt>Видео в выборке</dt>
+            <dd x-text="n.videos"></dd>
+          </div>
+        </dl>
+        <button class="secondary full" @click="topic = n.title; go('optimizer')">
+          Создать по этой теме
+          <svg class="icon" aria-hidden="true" focusable="false">
+            <use href="/assets/icons.svg#arrow-up-right"></use>
+          </svg>
+        </button>
+      </article>
+    </template>
+  </div>
+  <div class="empty-state panel" x-show="!channelRows.length && !nicheRows.length">
+    <span>
+      <svg class="icon" aria-hidden="true" focusable="false">
+        <use href="/assets/icons.svg#search"></use>
+      </svg>
+    </span>
+    <h3>Любопытство — хорошее начало</h3>
+    <p>Введи запрос, чтобы начать исследование.</p>
+  </div>
+  <p class="muted small" x-show="page === 'analytics'">
+    MVP показывает публичные суммарные показатели. Удержание, CTR и история роста требуют отдельного
+    подключения YouTube Analytics и не входят в эту версию.
+  </p>
+</section>
