@@ -1,14 +1,17 @@
-import { demoChannels } from '../data/demo-channels.js';
 // Внешние запросы ограничены таймаутом, ключ не передаётся в браузер.
 export async function youtube(path, params) {
+  if (!process.env.YOUTUBE_API_KEY)
+    throw Object.assign(new Error('YouTube not configured'), {
+      status: 503,
+      code: 'YOUTUBE_UNAVAILABLE',
+    });
   const url = new URL(`https://www.googleapis.com/youtube/v3/${path}`);
   url.search = new URLSearchParams({ ...params, key: process.env.YOUTUBE_API_KEY });
   const response = await fetch(url, { signal: AbortSignal.timeout(12000) });
   if (!response.ok) throw new Error('YouTube API недоступен. Проверьте ключ и квоту.');
   return response.json();
 }
-export async function channels(query, demo) {
-  if (demo) return demoChannels;
+export async function channels(query) {
   const search = await youtube('search', {
     part: 'snippet',
     type: 'channel',
@@ -28,16 +31,12 @@ export async function channels(query, demo) {
     color: '#d9eace',
   }));
 }
-export async function niches(query, demo) {
-  if (demo)
-    return [
-      'Монтаж на телефоне',
-      'YouTube с нуля',
-      'Съёмка без студии',
-      'Обзоры AI-инструментов',
-    ].map((title, i) => ({ title, videos: 12 + i * 7, averageViews: 18400 + i * 9300 }));
+export async function niches(query, locale = 'ru') {
   const results = await Promise.all(
-    ['для начинающих', 'урок', 'обзор', 'ошибки'].map(async (suffix) => {
+    (locale === 'en'
+      ? ['for beginners', 'tutorial', 'review', 'mistakes']
+      : ['для начинающих', 'урок', 'обзор', 'ошибки']
+    ).map(async (suffix) => {
       const title = `${query} ${suffix}`;
       const search = await youtube('search', {
         part: 'snippet',

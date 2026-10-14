@@ -1,18 +1,29 @@
 import { Router } from 'express';
-
+import { authReady } from '../config.js';
+import { supabase } from '../services/supabase.js';
+import { providerSettings } from '../services/readiness.js';
 const router = Router();
-router.get('/api/config', (req, res) => {
-  res.json({ demo: req.app.locals.demo, company: 'Obsidia' });
+router.get('/api/config', async (req, res) => {
+  let announcement = null;
+  if (authReady()) {
+    try {
+      const { data } = await supabase()
+        .from('app_settings')
+        .select('announcement_ru,announcement_en,version')
+        .eq('id', 1)
+        .single();
+      announcement = data;
+    } catch {}
+  }
+  const providers = await providerSettings();
+  res.json({
+    auth: authReady(),
+    google: providers.google,
+    youtube: Boolean(process.env.YOUTUBE_API_KEY),
+    announcement,
+  });
 });
-router.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', demo: req.app.locals.demo });
-});
-
-// HTMX получает готовый HTML, Alpine управляет интерактивными формами.
-router.get('/fragments/status', (req, res) => {
-  const label = req.app.locals.demo
-    ? 'Деморежим · данные для знакомства'
-    : 'YouTube API · реальный режим';
-  res.send(`<span class="status-dot"></span>${label}`);
-});
+router.get('/api/health', (req, res) =>
+  res.json({ status: 'ok', auth: authReady(), youtube: Boolean(process.env.YOUTUBE_API_KEY) }),
+);
 export default router;

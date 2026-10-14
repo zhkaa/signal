@@ -14,7 +14,7 @@ router.post('/projects', async (req, res) => {
   try {
     result = optimize(req.body || {});
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return res.status(400).json({ code: 'TOPIC_VALIDATION' });
   }
   const project = await projects(req, 'create', {
     title: result.topic,
@@ -25,7 +25,7 @@ router.post('/projects', async (req, res) => {
 });
 router.delete('/projects/:id', async (req, res) => {
   if (!/^[0-9a-f-]{36}$/.test(req.params.id)) {
-    return res.status(400).json({ error: 'Некорректный ID проекта.' });
+    return res.status(400).json({ code: 'NOT_FOUND' });
   }
   await projects(req, 'delete', req.params.id);
   res.status(204).end();

@@ -8,3 +8,6 @@ coverage/
 
 # Generated client output; edit src/client instead.
 public/
+
+# Local verification screenshots and handoff packages.
+artifacts/

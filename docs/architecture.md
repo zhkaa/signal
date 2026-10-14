@@ -1,67 +1,31 @@
-# Как устроен Signal
+# Архитектура Signal
 
-## Карта папок
+Express раздаёт собранные локальные ресурсы и API. Alpine управляет URL-backed интерфейсом без смены стека на SPA-фреймворк.
 
-```text
-signal/
-├── src/
-│   ├── client/                    # Фронтенд
-│   │   ├── assets/                # Исходный логотип
-│   │   ├── views/
-│   │   │   ├── index.html         # Каркас страницы и подключения компонентов
-│   │   │   ├── components/        # Шапка, подвал, окно аккаунта
-│   │   │   └── pages/             # Главная, оптимизация, исследование, проекты
-│   │   ├── styles/
-│   │   │   ├── main.css           # Подключение остальных CSS в нужном порядке
-│   │   │   ├── tokens.css         # Цвета, шрифт, общие размеры
-│   │   │   ├── base.css           # Базовые элементы и доступность
-│   │   │   ├── layout.css         # Шапка, меню, контейнеры, подвал
-│   │   │   ├── components.css     # Формы, кнопки, панели, модальное окно
-│   │   │   ├── dashboard.css      # Главная и её адаптивные правила
-│   │   │   └── tools.css          # Рабочие экраны и их адаптивные правила
-│   │   └── js/
-│   │       ├── app.js             # Запуск Alpine, состояние, навигация
-│   │       ├── lib/api.js         # Общий HTTP-клиент и обработка ошибок
-│   │       └── features/          # Оптимизация, проекты, поиск, вход
-│   └── server/                    # Сервер
-│       ├── index.js               # Запуск HTTP-сервера
-│       ├── app.js                 # Сборка Express-приложения
-│       ├── config.js              # Пути и проверка окружения
-│       ├── routes/                # HTTP: system, auth, tools, projects
-│       ├── middleware/            # JWT, демосессия, ошибки
-│       ├── services/              # Оптимизация, YouTube, Supabase, хранение
-│       └── data/                  # Явно обозначенные демоданные
-├── supabase/migrations/           # PostgreSQL и RLS — danik1dotcom
-├── scripts/                       # Сборка клиента, ресурсов и dev-режим
-├── tests/                         # Интеграционные проверки API
-├── docs/                          # Архитектура, этапы, передача и проверка БД
-├── public/                        # Результат сборки, НЕ редактировать
-├── .env.example                   # Образец настроек без секретов
-└── package.json                   # Зависимости и команды
-```
+## Клиент
 
-## Как проходит запрос
+views/index.html собирается с landing/auth/workspace. js/app.js владеет маршрутизацией, локалью, валидацией, состоянием запросов и общей обратной связью. features разделены на auth, optimizer, research и projects. CSS main.css использует canonical tokens.css. Локальные Lucide и Geologica создаются сборкой.
 
-1. HTML вызывает действие Alpine из `js/features/`.
-2. Действие обращается к серверу через `js/lib/api.js`.
-3. Express применяет ограничения запросов и middleware.
-4. Маршрут проверяет входные данные и вызывает сервис.
-5. Сервис выполняет вычисление или обращается к YouTube/Supabase.
-6. Клиент показывает результат через `x-text`, не вставляя пользовательский HTML.
+Public: /, /login, /register, /forgot-password. Reset требует сессии восстановления. Рабочие экраны: /app/dashboard, niches, optimizer, competitors, analytics, projects, settings и admin.
 
-HTMX отдельно запрашивает `/fragments/status`: сервер возвращает небольшой HTML-фрагмент статуса режима.
+## Сервер
 
-## Правила редактирования
+- middleware/auth.js проверяет Supabase getUser и обновляет истёкшую сессию.
+- services/session.js хранит access/refresh/PKCE cookies с HttpOnly и SameSite=Lax.
+- Все мутации API требуют Origin=APP_URL и application/json.
+- auth.js выполняет регистрацию/вход/Google PKCE/recovery/logout/profile.
+- projects.js ограничивает операции явным user_id даже для администраторов, а RLS обеспечивает дополнительную изоляцию.
+- tools.js требует входа и вызывает реальный YouTube API или шаблонный оптимизатор.
+- admin.js проверяет роль через серверную RPC и предоставляет сводку/объявления.
+- readiness.js проверяет публичные настройки Google provider с коротким кешем.
+- Ни service-role, ни database password не используются.
 
-- Меняем только исходники в `src/`. Сборка копирует JS/CSS, соединяет HTML-компоненты и создаёт ресурсы в `public/`.
-- `public/` исключён из Git. `npm start` и `npm test` автоматически выполняют сборку.
-- `npm run dev` пересобирает клиент при изменениях, Node перезапускает сервер при изменениях импортированных серверных модулей. После изменения интерфейса обновите браузер.
-- `npm run format` форматирует код. `npm run format:check` проверяет единый стиль.
-- Комментарии объясняют ограничения и причины решения: изоляцию сессий, JWT, порядок сборки. Не нужно пересказывать каждую строку.
-- Новый экран: добавьте HTML в `views/pages`, include в `views/index.html`, пункт навигации в `js/app.js` и действия в `js/features/`.
-- Новый API: добавьте маршрут в `server/routes`, сервис в `server/services` и подключите маршрут в `server/app.js`.
-- Миграции применяются вручную в Supabase в порядке 01–05, не во время запуска сайта.
+## База данных
 
-## Дизайн
+Миграции 01–05 определяют profiles/projects, RLS, индексы и ограничения. 06 добавляет user_roles, проверку admin, app_settings, version concurrency и неизменяемые admin_events. Имя при регистрации копируется из auth metadata, но роль из metadata не читается.
 
-Сборщик форматирует весь HTML после вставки компонентов: отступы готового `public/index.html` соответствуют вложенности исходного документа. `npm start` использует Prettier при сборке, поэтому устанавливайте зависимости через `npm ci` без `--omit=dev`.
+supabase/setup.sql генерируется командой db:prepare; оригиналы остаются canonical. Миграции не выполняются при старте сервера.
+
+## Сборка и проверка
+
+Менять src, не public. npm start собирает HTML/CSS/JS/assets. npm test использует отдельный mock HTTP provider, который не импортируется сервером приложения. scripts/test-preview.mjs существует только для браузерной проверки. DESIGN.md и UX-CONTRACT.md фиксируют визуальные и поведенческие решения.
