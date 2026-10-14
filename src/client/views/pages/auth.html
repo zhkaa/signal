@@ -1,0 +1,244 @@
+<div class="auth-page" x-show="isAuth">
+  <header class="auth-header">
+    <a class="brand" href="/" @click="link($event, '/')">
+      <svg viewBox="0 0 32 32" aria-hidden="true" class="brand-mark">
+        <path
+          d="M4 21V11m8 15V6m8 18V8m8 13V11"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="4"
+          stroke-linecap="round"
+        />
+      </svg>
+      <span>
+        signal
+        <span class="brand-dot">.</span>
+      </span>
+    </a>
+    <div class="header-actions">
+      <a class="back-link" href="/" @click="link($event,'/')">
+        <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#arrow-left"></use></svg>
+        <span x-text="t('backHome')"></span>
+      </a>
+      <button
+        type="button"
+        class="language-button"
+        @click="toggleLocale()"
+        :aria-label="t('language')"
+      >
+        <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#globe"></use></svg>
+        <span x-text="locale.toUpperCase()"></span>
+      </button>
+    </div>
+  </header>
+  <main id="auth-main" class="auth-layout">
+    <aside class="auth-story">
+      <div class="eyebrow-pill">
+        <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#circle-play"></use></svg>
+        <span x-text="t('badge')"></span>
+      </div>
+      <h2 x-text="t('authAside')"></h2>
+      <p x-text="t('authAsideText')"></p>
+      <img src="/assets/signal-discovery.png" width="1536" height="1024" alt="" />
+      <div class="auth-story-bottom">
+        <span class="mini-dot"></span>
+        <span x-text="t('footerNote')"></span>
+      </div>
+    </aside>
+    <section class="auth-form-panel">
+      <div class="auth-form-inner">
+        <h1
+          x-text="t(page==='register'?'signupTitle':page==='forgot-password'?'recoverTitle':page==='reset-password'?'resetTitle':page==='resend-confirmation'?'resendTitle':'authTitle')"
+        ></h1>
+        <p
+          class="auth-intro"
+          x-text="t(page==='register'?'signupIntro':page==='forgot-password'?'recoverText':page==='resend-confirmation'?'resendIntro':'authIntro')"
+        ></p>
+        <nav class="auth-switch" x-show="page==='login'||page==='register'">
+          <a
+            href="/register"
+            @click="link($event,'/register')"
+            :aria-current="page==='register'?'page':null"
+            x-text="t('register')"
+          ></a>
+          <a
+            href="/login"
+            @click="link($event,'/login')"
+            :aria-current="page==='login'?'page':null"
+            x-text="t('login')"
+          ></a>
+        </nav>
+        <p class="feedback info" x-show="!config.auth" x-text="t('authSetup')"></p>
+        <p class="feedback error" role="alert" x-show="error" x-text="t(error)"></p>
+        <p class="feedback success" role="status" x-show="notice" x-text="t(notice)"></p>
+        <a
+          class="text-link auth-back"
+          href="/resend-confirmation"
+          @click="link($event,'/resend-confirmation')"
+          x-show="notice==='confirmed'"
+          x-text="t('resendConfirmation')"
+        ></a>
+        <button
+          type="button"
+          class="button google-button"
+          x-show="page==='login'||page==='register'"
+          @click="google()"
+          :disabled="busy||!config.auth||!config.google"
+          aria-describedby="google-status"
+        >
+          <svg class="google-mark" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="#4285f4"
+              d="M21.6 12.2c0-.7-.1-1.4-.2-2.1H12v4h5.4a4.6 4.6 0 0 1-2 3v2.5h3.3c1.9-1.7 2.9-4.2 2.9-7.4Z"
+            />
+            <path
+              fill="#34a853"
+              d="M12 22c2.7 0 5-0.9 6.7-2.4l-3.3-2.5c-.9.6-2 .9-3.4.9-2.6 0-4.8-1.7-5.6-4.1H3v2.6A10 10 0 0 0 12 22Z"
+            />
+            <path fill="#fbbc05" d="M6.4 13.9a6 6 0 0 1 0-3.8V7.5H3a10 10 0 0 0 0 9l3.4-2.6Z" />
+            <path
+              fill="#ea4335"
+              d="M12 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9A9.7 9.7 0 0 0 12 2a10 10 0 0 0-9 5.5l3.4 2.6A5.9 5.9 0 0 1 12 6Z"
+            />
+          </svg>
+          <span x-text="t('google')"></span>
+        </button>
+        <p
+          id="google-status"
+          class="field-help"
+          x-show="config.auth&&!config.google&&(page==='login'||page==='register')"
+          x-text="t('OAUTH_UNAVAILABLE')"
+        ></p>
+        <div class="auth-divider" x-show="page==='login'||page==='register'">
+          <span x-text="t('or')"></span>
+        </div>
+        <form novalidate @submit.prevent="authenticate()" :aria-busy="busy">
+          <div x-show="page==='register'">
+            <div class="field">
+              <label for="name" x-text="t('name')"></label>
+              <input
+                id="name"
+                type="text"
+                x-model="name"
+                autocomplete="name"
+                maxlength="100"
+                :aria-invalid="!!fieldErrors.name"
+                aria-describedby="name-error"
+              />
+              <p
+                id="name-error"
+                class="field-error"
+                x-text="fieldErrors.name ? t(fieldErrors.name) : ''"
+              ></p>
+            </div>
+          </div>
+          <div x-show="page!=='reset-password'">
+            <div class="field">
+              <label for="email" x-text="t('email')"></label>
+              <input
+                id="email"
+                type="email"
+                x-model="email"
+                autocomplete="email"
+                maxlength="254"
+                placeholder="you@example.com"
+                :aria-invalid="!!fieldErrors.email"
+                aria-describedby="email-error"
+              />
+              <p
+                id="email-error"
+                class="field-error"
+                x-text="fieldErrors.email ? t(fieldErrors.email) : ''"
+              ></p>
+            </div>
+          </div>
+          <div class="field" x-show="page!=='forgot-password'&&page!=='resend-confirmation'">
+            <label for="password" x-text="t('password')"></label>
+            <div class="password-field">
+              <input
+                id="password"
+                :type="showPassword?'text':'password'"
+                x-model="password"
+                :autocomplete="page==='login'?'current-password':'new-password'"
+                maxlength="128"
+                :aria-invalid="!!fieldErrors.password"
+                aria-describedby="password-error password-help"
+              />
+              <button
+                type="button"
+                @click="showPassword=!showPassword"
+                :aria-label="t(showPassword?'hidePassword':'showPassword')"
+                :aria-pressed="showPassword"
+              >
+                <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#eye"></use></svg>
+              </button>
+            </div>
+            <p
+              id="password-help"
+              class="field-help"
+              x-show="page!=='login'"
+              x-text="t('passwordHelp')"
+            ></p>
+            <p
+              id="password-error"
+              class="field-error"
+              x-text="fieldErrors.password?t(fieldErrors.password):''"
+            ></p>
+          </div>
+          <div x-show="page==='register'||page==='reset-password'">
+            <div class="field">
+              <label for="confirmPassword" x-text="t('confirmPassword')"></label>
+              <input
+                id="confirmPassword"
+                type="password"
+                x-model="confirmPassword"
+                autocomplete="new-password"
+                maxlength="128"
+                :aria-invalid="!!fieldErrors.confirmPassword"
+                aria-describedby="confirmPassword-error"
+              />
+              <p
+                id="confirmPassword-error"
+                class="field-error"
+                x-text="fieldErrors.confirmPassword ? t(fieldErrors.confirmPassword) : ''"
+              ></p>
+            </div>
+          </div>
+          <a
+            class="forgot-link"
+            href="/forgot-password"
+            @click="link($event,'/forgot-password')"
+            x-show="page==='login'"
+            x-text="t('forgot')"
+          ></a>
+          <button
+            class="button neutral auth-submit"
+            :disabled="busy||!config.auth||(page==='resend-confirmation'&&resendWaiting)"
+            :aria-busy="busy"
+          >
+            <span class="spinner" x-show="busy"></span>
+            <span
+              x-text="t(page==='register'?'signupSubmit':page==='forgot-password'?'sendLink':page==='reset-password'?'resetSubmit':page==='resend-confirmation'?(resendWaiting?'resendWait':'resendConfirmation'):'login')"
+            ></span>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#arrow-right"></use>
+            </svg>
+          </button>
+        </form>
+        <a
+          href="/login"
+          class="text-link auth-back"
+          @click="link($event,'/login')"
+          x-show="page==='forgot-password'||page==='reset-password'||page==='resend-confirmation'"
+          x-text="t('login')"
+        ></a>
+        <p class="auth-footer-note">
+          <svg class="icon" aria-hidden="true">
+            <use href="/assets/icons.svg#shield-check"></use>
+          </svg>
+          <span x-text="t('footerNote')"></span>
+        </p>
+      </div>
+    </section>
+  </main>
+</div>

@@ -1,14 +1,16 @@
-/** Общий HTTP-клиент. Токен берётся из памяти, а не из localStorage. */
-export async function request(url, options = {}, token = '') {
+export async function request(url, options = {}) {
   const response = await fetch(url, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', ...options.headers },
+    signal: options.signal || AbortSignal.timeout(20000),
   });
   if (response.status === 204) return null;
-  const data = await response.json().catch(() => ({ error: 'Сервис временно недоступен.' }));
-  if (!response.ok) throw new Error(data.error || 'Ошибка запроса. Повторите позже.');
+  const data = await response.json().catch(() => ({ code: 'REQUEST_FAILED' }));
+  if (!response.ok)
+    throw Object.assign(new Error(data.code || 'REQUEST_FAILED'), {
+      code: data.code || 'REQUEST_FAILED',
+      status: response.status,
+    });
   return data;
 }

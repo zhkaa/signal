@@ -1,0 +1,992 @@
+<div class="workspace-shell" x-show="shell==='app'&&user">
+  <aside class="sidebar" :class="mobile?'is-open':''">
+    <div class="sidebar-brand">
+      <a class="brand" href="/" @click="link($event, '/')">
+        <svg viewBox="0 0 32 32" aria-hidden="true" class="brand-mark">
+          <path
+            d="M4 21V11m8 15V6m8 18V8m8 13V11"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="4"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span>
+          signal
+          <span class="brand-dot">.</span>
+        </span>
+      </a>
+      <button
+        class="icon-button mobile-toggle"
+        :aria-label="t('tools')"
+        :aria-expanded="mobile"
+        @click="mobile=!mobile"
+      >
+        <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#menu"></use></svg>
+      </button>
+    </div>
+    <div class="sidebar-body">
+      <div class="workspace-label"><span x-text="t('previewLabel')"></span></div>
+      <nav :aria-label="t('tools')">
+        <template x-for="item in nav" :key="item.id">
+          <a
+            :href="'/app/'+item.id"
+            @click="link($event,'/app/'+item.id)"
+            :class="page===item.id?'active':''"
+            :aria-current="page===item.id?'page':null"
+          >
+            <svg class="icon" aria-hidden="true">
+              <use :href="'/assets/icons.svg#'+item.icon"></use>
+            </svg>
+            <span x-text="t(item.id)"></span>
+            <span
+              class="nav-count"
+              x-show="item.id==='projects'&&totalProjects"
+              x-text="totalProjects"
+            ></span>
+          </a>
+        </template>
+      </nav>
+      <div class="sidebar-bottom">
+        <a
+          href="/app/settings"
+          @click="link($event,'/app/settings')"
+          :class="page==='settings'?'active':''"
+          :aria-current="page==='settings'?'page':null"
+        >
+          <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#settings"></use></svg>
+          <span x-text="t('settings')"></span>
+        </a>
+        <a
+          href="/app/admin"
+          x-show="user?.admin"
+          @click="link($event,'/app/admin')"
+          :class="page==='admin'?'active':''"
+          :aria-current="page==='admin'?'page':null"
+        >
+          <svg class="icon" aria-hidden="true">
+            <use href="/assets/icons.svg#shield-check"></use>
+          </svg>
+          <span x-text="t('admin')"></span>
+        </a>
+        <button :disabled="busy" @click="logout()">
+          <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#log-out"></use></svg>
+          <span x-text="t('logout')"></span>
+        </button>
+        <div class="sidebar-footer">
+          <span>Signal by Obsidia</span>
+          <span>© 2026</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="workspace-content">
+    <header class="workspace-header">
+      <div class="breadcrumbs">
+        <a href="/app/dashboard" @click="link($event,'/app/dashboard')">Signal</a>
+        <svg class="icon" aria-hidden="true">
+          <use href="/assets/icons.svg#chevron-right"></use>
+        </svg>
+        <span x-text="heading"></span>
+      </div>
+      <div class="header-actions">
+        <button
+          type="button"
+          class="language-button"
+          @click="toggleLocale()"
+          :aria-label="t('language')"
+        >
+          <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#globe"></use></svg>
+          <span x-text="locale.toUpperCase()"></span>
+        </button>
+        <a
+          class="user-menu"
+          href="/app/settings"
+          @click="link($event,'/app/settings')"
+          :aria-label="t('profile')"
+        >
+          <span
+            class="user-avatar"
+            x-text="(user?.name||user?.email||'S').slice(0,1).toUpperCase()"
+          ></span>
+          <span x-text="user?.name||user?.email"></span>
+        </a>
+      </div>
+    </header>
+    <main id="workspace-main" class="workspace-main">
+      <div class="page-title">
+        <div>
+          <p class="eyebrow" x-text="page==='dashboard'?t('welcome'):'SIGNAL / '+t('tools')"></p>
+          <h1 x-ref="pageHeading" tabindex="-1" x-text="heading"></h1>
+          <p
+            x-text="t(page==='dashboard'?'welcomeText':page==='admin'?'adminText':page==='optimizer'?'optimizerText':page==='niches'?'nichesText':page==='competitors'?'competitorsText':page==='projects'?'projectsText':page==='analytics'?'publicNote':'profileText')"
+          ></p>
+        </div>
+        <a
+          x-show="page==='dashboard'"
+          class="button outline"
+          href="/app/optimizer"
+          @click="link($event,'/app/optimizer')"
+        >
+          <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#plus"></use></svg>
+          <span x-text="t('newProject')"></span>
+        </a>
+      </div>
+      <div class="feedback-stack">
+        <div class="feedback error" role="alert" x-show="error">
+          <span x-text="t(error)"></span>
+          <button
+            x-show="['projects','dashboard','admin'].includes(page)"
+            class="button ghost small"
+            :disabled="busy"
+            @click="onRoute()"
+            x-text="t('retry')"
+          ></button>
+        </div>
+        <div class="feedback success" role="status" x-show="notice" x-text="t(notice)"></div>
+        <div class="loading-status" role="status" x-show="busy">
+          <span class="spinner"></span>
+          <span x-text="t('busy')"></span>
+        </div>
+      </div>
+      <section x-show="page==='dashboard'">
+        <div class="metrics-grid">
+          <div class="metric">
+            <span class="metric-icon">
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#folder-open"></use>
+              </svg>
+            </span>
+            <div>
+              <p x-text="t('savedCount')"></p>
+              <strong x-text="totalProjects"></strong>
+            </div>
+          </div>
+          <div class="metric">
+            <span class="metric-icon">
+              <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#search"></use></svg>
+            </span>
+            <div>
+              <p x-text="t('searchesCount')"></p>
+              <strong x-text="searches"></strong>
+            </div>
+          </div>
+          <div class="metric">
+            <span class="metric-icon">
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#users-round"></use>
+              </svg>
+            </span>
+            <div>
+              <p x-text="t('comparedCount')"></p>
+              <strong x-text="selectedChannels.length"></strong>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-promo">
+          <div>
+            <p class="eyebrow" x-text="'SIGNAL / '+t('researchWord')"></p>
+            <h2 x-text="t('dashTitle')"></h2>
+            <p x-text="t('dashText')"></p>
+            <a class="button neutral" href="/app/niches" @click="link($event,'/app/niches')">
+              <span x-text="t('niches')"></span>
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#arrow-right"></use>
+              </svg>
+            </a>
+          </div>
+          <img src="/assets/signal-discovery.png" width="1536" height="1024" alt="" />
+        </div>
+        <div class="panel">
+          <div class="panel-heading">
+            <h2 x-text="t('recent')"></h2>
+            <a href="/app/projects" class="text-link" @click="link($event,'/app/projects')">
+              <span x-text="t('allProjects')"></span>
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#arrow-right"></use>
+              </svg>
+            </a>
+          </div>
+          <div class="table-wrap" x-show="saved.length">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col" x-text="t('topic')"></th>
+                  <th scope="col" x-text="t('kind')"></th>
+                  <th scope="col" x-text="t('date')"></th>
+                  <th scope="col"><span class="sr-only" x-text="t('tools')"></span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <template
+                  x-for="project in (page==='dashboard'?saved.slice(0,4):saved)"
+                  :key="project.id"
+                >
+                  <tr>
+                    <td><span class="table-project-name" x-text="project.title"></span></td>
+                    <td><span class="tag neutral-tag" x-text="t(project.kind)"></span></td>
+                    <td class="muted" x-text="date(project.created_at)"></td>
+                    <td class="row-actions">
+                      <button
+                        class="button ghost small"
+                        :disabled="busy"
+                        @click="openProject(project)"
+                      >
+                        <span x-text="t('open')"></span>
+                        <svg class="icon" aria-hidden="true">
+                          <use href="/assets/icons.svg#arrow-up-right"></use>
+                        </svg>
+                      </button>
+                      <button
+                        class="icon-button delete-button"
+                        :disabled="busy"
+                        @click="askDelete(project)"
+                        :aria-label="t('delete')+': '+project.title"
+                      >
+                        <svg class="icon" aria-hidden="true">
+                          <use href="/assets/icons.svg#trash-2"></use>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div x-show="!saved.length&&!busy">
+            <div class="empty-state">
+              <span class="empty-icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#folder-open"></use>
+                </svg>
+              </span>
+              <h3 x-text="t('emptyProjects')"></h3>
+              <p x-text="t('emptyProjectsText')"></p>
+            </div>
+            <div class="empty-action">
+              <a
+                class="button outline"
+                href="/app/optimizer"
+                @click="link($event,'/app/optimizer')"
+                x-text="t('createProject')"
+              ></a>
+            </div>
+          </div>
+        </div>
+        <h2 class="quick-title" x-text="t('quick')"></h2>
+        <div class="quick-grid">
+          <a class="quick-card" href="/app/niches" @click="link($event,'/app/niches')">
+            <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#search"></use></svg>
+            <div>
+              <h3 x-text="t('niches')"></h3>
+              <p x-text="t('nichesText')"></p>
+            </div>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#arrow-up-right"></use>
+            </svg>
+          </a>
+          <a class="quick-card" href="/app/optimizer" @click="link($event,'/app/optimizer')">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#sliders-horizontal"></use>
+            </svg>
+            <div>
+              <h3 x-text="t('optimizer')"></h3>
+              <p x-text="t('optimizerText')"></p>
+            </div>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#arrow-up-right"></use>
+            </svg>
+          </a>
+          <a class="quick-card" href="/app/competitors" @click="link($event,'/app/competitors')">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#users-round"></use>
+            </svg>
+            <div>
+              <h3 x-text="t('competitors')"></h3>
+              <p x-text="t('competitorsText')"></p>
+            </div>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#arrow-up-right"></use>
+            </svg>
+          </a>
+        </div>
+      </section>
+      <section class="tool-grid" x-show="page==='optimizer'">
+        <div class="panel tool-form">
+          <div class="panel-heading">
+            <h2 x-text="t('createProject')"></h2>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#sliders-horizontal"></use>
+            </svg>
+          </div>
+          <p class="muted" x-text="t('optimizerNote')"></p>
+          <form novalidate @submit.prevent="generate()" :aria-busy="busy">
+            <div class="field">
+              <label for="topic" x-text="t('topic')"></label>
+              <input
+                id="topic"
+                x-model="topic"
+                maxlength="160"
+                :placeholder="t('topicPlaceholder')"
+                :aria-invalid="!!fieldErrors.topic"
+                aria-describedby="topic-error"
+              />
+              <p
+                id="topic-error"
+                class="field-error"
+                x-text="fieldErrors.topic?t(fieldErrors.topic):''"
+              ></p>
+            </div>
+            <div class="field">
+              <label for="audience" x-text="t('audience')"></label>
+              <input
+                id="audience"
+                x-model="audience"
+                maxlength="100"
+                :placeholder="t('audiencePlaceholder')"
+              />
+            </div>
+            <div class="field">
+              <label for="kind" x-text="t('kind')"></label>
+              <select id="kind" x-model="kind">
+                <option value="video" x-text="t('video')"></option>
+                <option value="channel" x-text="t('channel')"></option>
+                <option value="stream" x-text="t('stream')"></option>
+              </select>
+            </div>
+            <button class="button full-width" :disabled="busy">
+              <span class="spinner" x-show="busy"></span>
+              <span x-text="t('generate')"></span>
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#arrow-right"></use>
+              </svg>
+            </button>
+          </form>
+        </div>
+        <div class="panel result-panel">
+          <div class="panel-heading">
+            <h2 x-text="t('results')"></h2>
+            <span class="tag" x-show="result" x-text="t(result?.kind||'video')"></span>
+          </div>
+          <div x-show="!result">
+            <div class="empty-state">
+              <span class="empty-icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#lightbulb"></use>
+                </svg>
+              </span>
+              <h3 x-text="t('emptyProjects')"></h3>
+              <p x-text="t('optimizerText')"></p>
+            </div>
+          </div>
+          <template x-if="result">
+            <div>
+              <div class="result-section">
+                <h3 x-text="t('titles')"></h3>
+                <ul class="title-options">
+                  <template x-for="title in result.titles"><li x-text="title"></li></template>
+                </ul>
+              </div>
+              <div class="result-section">
+                <h3 x-text="t('description')"></h3>
+                <p class="generated-description" x-text="result.description"></p>
+              </div>
+              <div class="result-section">
+                <h3 x-text="t('tags')"></h3>
+                <div class="tags">
+                  <template x-for="tag in result.tags">
+                    <span class="tag neutral-tag" x-text="tag"></span>
+                  </template>
+                </div>
+              </div>
+              <div class="result-section">
+                <h3 x-text="t('checklist')"></h3>
+                <ul class="checklist">
+                  <template x-for="item in result.checklist">
+                    <li>
+                      <svg class="icon" aria-hidden="true">
+                        <use href="/assets/icons.svg#circle-check"></use>
+                      </svg>
+                      <span x-text="item"></span>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+              <div class="result-actions">
+                <button class="button" :disabled="busy||resultSaved" @click="saveProject()">
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#folder-open"></use>
+                  </svg>
+                  <span x-text="t('saveProject')"></span>
+                </button>
+                <button class="button outline" :disabled="busy" @click="copyResult()">
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#copy"></use>
+                  </svg>
+                  <span x-text="t('copyResult')"></span>
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </section>
+      <section x-show="['niches','competitors','analytics'].includes(page)">
+        <div class="panel research-search">
+          <form novalidate @submit.prevent="search()" :aria-busy="busy">
+            <div class="field search-field">
+              <label for="query" x-text="t('searchLabel')"></label>
+              <div class="search-input">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#search"></use>
+                </svg>
+                <input
+                  id="query"
+                  x-ref="searchInput"
+                  x-model="query"
+                  :placeholder="t('searchPlaceholder')"
+                  maxlength="100"
+                  :aria-invalid="!!fieldErrors.query"
+                  aria-describedby="query-error"
+                />
+                <button
+                  type="button"
+                  class="icon-button"
+                  x-show="query"
+                  :disabled="busy"
+                  @click="clearSearch()"
+                  :aria-label="t('clear')"
+                >
+                  <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#x"></use></svg>
+                </button>
+              </div>
+              <p
+                id="query-error"
+                class="field-error"
+                x-text="fieldErrors.query?t(fieldErrors.query):''"
+              ></p>
+            </div>
+            <button class="button neutral" :disabled="busy||!config.youtube">
+              <span class="spinner" x-show="busy"></span>
+              <span x-text="t('search')"></span>
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#arrow-right"></use>
+              </svg>
+            </button>
+          </form>
+          <p class="research-note">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#circle-help"></use>
+            </svg>
+            <span x-text="t(page==='niches'?'sampleNote':'publicNote')"></span>
+          </p>
+          <p class="feedback info" x-show="!config.youtube" x-text="t('youtubeSetup')"></p>
+        </div>
+        <div class="panel research-results">
+          <div class="panel-heading">
+            <h2 x-text="t('results')"></h2>
+            <span class="muted" x-show="searched&&!busy">
+              <span x-text="t('found')"></span>
+              :
+              <span x-text="page==='niches'?nicheRows.length:channelRows.length"></span>
+            </span>
+          </div>
+          <div x-show="!searched">
+            <div class="empty-state">
+              <span class="empty-icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#search"></use>
+                </svg>
+              </span>
+              <h3 x-text="t('researchEmpty')"></h3>
+              <p x-text="t('researchEmptyText')"></p>
+            </div>
+          </div>
+          <div x-show="searched&&!busy&&(page==='niches'?!nicheRows.length:!channelRows.length)">
+            <div class="empty-state">
+              <span class="empty-icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#search"></use>
+                </svg>
+              </span>
+              <h3 x-text="t('noResults')"></h3>
+              <p x-text="t('noResultsText')"></p>
+            </div>
+          </div>
+          <div class="niche-list" x-show="page==='niches'">
+            <template x-for="(row,index) in nicheRows" :key="row.title">
+              <article class="niche-row">
+                <span class="niche-rank" x-text="index+1"></span>
+                <div class="niche-name">
+                  <h3 x-text="row.title"></h3>
+                  <p>
+                    <span x-text="t('sample')"></span>
+                    :
+                    <span x-text="row.videos"></span>
+                    <span x-text="t('videos').toLowerCase()"></span>
+                  </p>
+                </div>
+                <div class="niche-value">
+                  <strong x-text="num(row.averageViews)"></strong>
+                  <span x-text="t('averageViews')"></span>
+                </div>
+                <button class="button outline small" :disabled="busy" @click="useTopic(row)">
+                  <span x-text="t('useTopic')"></span>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#arrow-right"></use>
+                  </svg>
+                </button>
+              </article>
+            </template>
+          </div>
+          <div class="channel-grid" x-show="page!=='niches'">
+            <template x-for="row in channelRows" :key="row.id">
+              <article class="channel-card">
+                <div class="channel-title">
+                  <span class="channel-avatar" x-text="row.title.slice(0,1)"></span>
+                  <div>
+                    <h3 x-text="row.title"></h3>
+                    <a
+                      class="muted"
+                      :href="'https://www.youtube.com/channel/'+row.id"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      x-text="row.handle"
+                    ></a>
+                  </div>
+                </div>
+                <dl class="channel-stats">
+                  <div>
+                    <dt x-text="t('subscribers')"></dt>
+                    <dd x-text="num(row.subscribers)"></dd>
+                  </div>
+                  <div>
+                    <dt x-text="t('views')"></dt>
+                    <dd x-text="num(row.views)"></dd>
+                  </div>
+                  <div>
+                    <dt x-text="t('videos')"></dt>
+                    <dd x-text="num(row.videos)"></dd>
+                  </div>
+                </dl>
+                <button
+                  class="button outline full-width"
+                  x-show="page==='competitors'"
+                  :disabled="busy||(selectedChannels.length>=4&&!selectedChannels.some(x=>x.id===row.id))"
+                  :aria-pressed="selectedChannels.some(x=>x.id===row.id)"
+                  @click="toggleChannel(row)"
+                  x-text="t(selectedChannels.some(x=>x.id===row.id)?'selected':'compare')"
+                ></button>
+              </article>
+            </template>
+          </div>
+        </div>
+        <div class="panel comparison-panel" x-show="page==='competitors'">
+          <div class="panel-heading">
+            <h2 x-text="t('comparison')"></h2>
+            <span class="tag" x-text="selectedChannels.length+' / 4'"></span>
+          </div>
+          <p class="muted" x-show="!selectedChannels.length" x-text="t('compareHelp')"></p>
+          <div class="table-wrap" x-show="selectedChannels.length">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col" x-text="t('channel')"></th>
+                  <th scope="col" x-text="t('subscribers')"></th>
+                  <th scope="col" x-text="t('views')"></th>
+                  <th scope="col" x-text="t('videos')"></th>
+                  <th scope="col"><span class="sr-only" x-text="t('delete')"></span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="row in selectedChannels" :key="row.id">
+                  <tr>
+                    <td x-text="row.title"></td>
+                    <td x-text="num(row.subscribers)"></td>
+                    <td x-text="num(row.views)"></td>
+                    <td x-text="num(row.videos)"></td>
+                    <td>
+                      <button
+                        class="icon-button"
+                        @click="toggleChannel(row)"
+                        :aria-label="t('delete')+': '+row.title"
+                      >
+                        <svg class="icon" aria-hidden="true">
+                          <use href="/assets/icons.svg#x"></use>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <section class="panel" x-show="page==='projects'">
+        <div class="panel-heading">
+          <h2>
+            <span x-text="t('projects')"></span>
+            <span class="count-pill" x-text="totalProjects"></span>
+          </h2>
+          <a href="/app/optimizer" class="button small" @click="link($event,'/app/optimizer')">
+            <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#plus"></use></svg>
+            <span x-text="t('newProject')"></span>
+          </a>
+        </div>
+        <div class="table-wrap" x-show="saved.length">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" x-text="t('topic')"></th>
+                <th scope="col" x-text="t('kind')"></th>
+                <th scope="col" x-text="t('date')"></th>
+                <th scope="col"><span class="sr-only" x-text="t('tools')"></span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <template
+                x-for="project in (page==='dashboard'?saved.slice(0,4):saved)"
+                :key="project.id"
+              >
+                <tr>
+                  <td><span class="table-project-name" x-text="project.title"></span></td>
+                  <td><span class="tag neutral-tag" x-text="t(project.kind)"></span></td>
+                  <td class="muted" x-text="date(project.created_at)"></td>
+                  <td class="row-actions">
+                    <button
+                      class="button ghost small"
+                      :disabled="busy"
+                      @click="openProject(project)"
+                    >
+                      <span x-text="t('open')"></span>
+                      <svg class="icon" aria-hidden="true">
+                        <use href="/assets/icons.svg#arrow-up-right"></use>
+                      </svg>
+                    </button>
+                    <button
+                      class="icon-button delete-button"
+                      :disabled="busy"
+                      @click="askDelete(project)"
+                      :aria-label="t('delete')+': '+project.title"
+                    >
+                      <svg class="icon" aria-hidden="true">
+                        <use href="/assets/icons.svg#trash-2"></use>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+        <div x-show="!saved.length&&!busy">
+          <div class="empty-state">
+            <span class="empty-icon">
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#folder-open"></use>
+              </svg>
+            </span>
+            <h3 x-text="t('emptyProjects')"></h3>
+            <p x-text="t('emptyProjectsText')"></p>
+          </div>
+          <div class="empty-action">
+            <a
+              href="/app/optimizer"
+              class="button outline"
+              @click="link($event,'/app/optimizer')"
+              x-text="t('createProject')"
+            ></a>
+          </div>
+        </div>
+        <nav class="pagination" :aria-label="t('page')" x-show="totalProjects>12">
+          <button
+            class="button outline small"
+            :disabled="busy||listPage<=1"
+            @click="changeListPage(-1)"
+          >
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#chevron-left"></use>
+            </svg>
+            <span x-text="t('previous')"></span>
+          </button>
+          <span>
+            <span x-text="t('page')"></span>
+            <span x-text="listPage"></span>
+            <span x-text="t('of')"></span>
+            <span x-text="Math.max(1,Math.ceil(totalProjects/12))"></span>
+          </span>
+          <button
+            class="button outline small"
+            :disabled="busy||listPage*12>=totalProjects"
+            @click="changeListPage(1)"
+          >
+            <span x-text="t('next')"></span>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#chevron-right"></use>
+            </svg>
+          </button>
+        </nav>
+      </section>
+      <section class="settings-grid" x-show="page==='settings'">
+        <div class="panel">
+          <div class="panel-heading">
+            <h2 x-text="t('profile')"></h2>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#user-round"></use>
+            </svg>
+          </div>
+          <p class="muted" x-text="t('profileText')"></p>
+          <form novalidate @submit.prevent="saveProfile()">
+            <div class="field">
+              <label for="profile-name" x-text="t('name')"></label>
+              <input
+                id="profile-name"
+                x-model="profileName"
+                autocomplete="name"
+                maxlength="100"
+                :aria-invalid="!!fieldErrors.name"
+                aria-describedby="profile-name-error"
+              />
+              <p
+                id="profile-name-error"
+                class="field-error"
+                x-text="fieldErrors.name?t(fieldErrors.name):''"
+              ></p>
+            </div>
+            <div class="field">
+              <label for="account-email" x-text="t('email')"></label>
+              <input id="account-email" :value="user?.email" readonly />
+            </div>
+            <button class="button" :disabled="busy||profileName===user?.name">
+              <span class="spinner" x-show="busy"></span>
+              <span x-text="t('saveChanges')"></span>
+            </button>
+          </form>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="panel-heading">
+              <h2 x-text="t('security')"></h2>
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#shield-check"></use>
+              </svg>
+            </div>
+            <p class="muted" x-text="t('securityText')"></p>
+            <a
+              href="/forgot-password"
+              class="button outline"
+              @click="link($event,'/forgot-password')"
+              x-text="t('recoverTitle')"
+            ></a>
+          </div>
+          <div class="panel integration-panel">
+            <div class="panel-heading">
+              <h2 x-text="t('integrations')"></h2>
+              <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#link"></use></svg>
+            </div>
+            <div class="integration-row">
+              <span>Supabase</span>
+              <span
+                class="status-tag"
+                :class="config.auth?'success-tag':'neutral-tag'"
+                x-text="t(config.auth?'configured':'notConfigured')"
+              ></span>
+            </div>
+            <div class="integration-row">
+              <span>YouTube Data API</span>
+              <span
+                class="status-tag"
+                :class="config.youtube?'success-tag':'neutral-tag'"
+                x-text="t(config.youtube?'configured':'notConfigured')"
+              ></span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section x-show="page==='admin'">
+        <div class="panel route-error" x-show="!user?.admin">
+          <svg class="icon" aria-hidden="true">
+            <use href="/assets/icons.svg#shield-check"></use>
+          </svg>
+          <h2 x-text="t('forbidden')"></h2>
+          <p x-text="t('forbiddenText')"></p>
+          <a
+            href="/app/dashboard"
+            class="button outline"
+            @click="link($event,'/app/dashboard')"
+            x-text="t('dashboard')"
+          ></a>
+        </div>
+        <template x-if="user?.admin&&adminData">
+          <div>
+            <div class="metrics-grid">
+              <div class="metric">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#users-round"></use>
+                </svg>
+                <div>
+                  <p x-text="t('users')"></p>
+                  <strong x-text="adminData.userCount"></strong>
+                </div>
+              </div>
+              <div class="metric">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#folder-open"></use>
+                </svg>
+                <div>
+                  <p x-text="t('totalProjects')"></p>
+                  <strong x-text="adminData.projectCount"></strong>
+                </div>
+              </div>
+              <div class="metric">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#activity"></use>
+                </svg>
+                <div>
+                  <p>YouTube API</p>
+                  <strong
+                    class="metric-status"
+                    x-text="t(adminData.integrations.youtube?'configured':'notConfigured')"
+                  ></strong>
+                </div>
+              </div>
+            </div>
+            <div class="settings-grid">
+              <div class="panel">
+                <div class="panel-heading">
+                  <h2 x-text="t('announcement')"></h2>
+                  <button
+                    class="icon-button"
+                    :disabled="busy"
+                    @click="loadAdmin()"
+                    :aria-label="t('reload')"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#refresh-cw"></use>
+                    </svg>
+                  </button>
+                </div>
+                <p class="muted" x-text="t('announcementText')"></p>
+                <form novalidate @submit.prevent="saveAnnouncement()">
+                  <div class="field">
+                    <label for="announcement-ru" x-text="t('announcementRu')"></label>
+                    <textarea
+                      id="announcement-ru"
+                      x-model="announcementRu"
+                      maxlength="300"
+                      rows="3"
+                      style="resize: none"
+                    ></textarea>
+                    <span class="field-help" x-text="announcementRu.length+' / 300'"></span>
+                  </div>
+                  <div class="field">
+                    <label for="announcement-en" x-text="t('announcementEn')"></label>
+                    <textarea
+                      id="announcement-en"
+                      x-model="announcementEn"
+                      maxlength="300"
+                      rows="3"
+                      style="resize: none"
+                    ></textarea>
+                    <span class="field-help" x-text="announcementEn.length+' / 300'"></span>
+                  </div>
+                  <button class="button" :disabled="busy">
+                    <span class="spinner" x-show="busy"></span>
+                    <span x-text="t('saveChanges')"></span>
+                  </button>
+                </form>
+              </div>
+              <div class="panel">
+                <div class="panel-heading">
+                  <h2 x-text="t('events')"></h2>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#activity"></use>
+                  </svg>
+                </div>
+                <p class="muted" x-show="!adminData.events.length" x-text="t('noEvents')"></p>
+                <ol class="event-list">
+                  <template x-for="event in adminData.events" :key="event.id">
+                    <li>
+                      <svg class="icon" aria-hidden="true">
+                        <use href="/assets/icons.svg#circle-check"></use>
+                      </svg>
+                      <div>
+                        <strong x-text="t('announcementUpdated')"></strong>
+                        <p>
+                          <time
+                            x-text="timestamp(event.created_at)"
+                            :datetime="event.created_at"
+                          ></time>
+                          · Asia/Qyzylorda
+                        </p>
+                        <span class="event-actor" x-text="event.actor_id||'—'"></span>
+                      </div>
+                    </li>
+                  </template>
+                </ol>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-heading">
+                <h2 x-text="t('users')"></h2>
+                <span class="tag" x-text="adminData.userCount"></span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col" x-text="t('displayName')"></th>
+                      <th scope="col" x-text="t('accountId')"></th>
+                      <th scope="col" x-text="t('date')"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="row in adminData.users" :key="row.id">
+                      <tr>
+                        <td x-text="row.display_name||t('noName')"></td>
+                        <td class="mono" x-text="row.id"></td>
+                        <td x-text="date(row.created_at)"></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+              <nav class="pagination" :aria-label="t('page')" x-show="adminData?.userCount>12">
+                <button
+                  class="button outline small"
+                  :disabled="busy||adminPage<=1"
+                  @click="changeAdminPage(-1)"
+                >
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#chevron-left"></use>
+                  </svg>
+                  <span x-text="t('previous')"></span>
+                </button>
+                <span>
+                  <span x-text="t('page')"></span>
+                  <span x-text="adminPage"></span>
+                  <span x-text="t('of')"></span>
+                  <span x-text="Math.max(1,Math.ceil((adminData?.userCount||0)/12))"></span>
+                </span>
+                <button
+                  class="button outline small"
+                  :disabled="busy||adminPage*12>=(adminData?.userCount||0)"
+                  @click="changeAdminPage(1)"
+                >
+                  <span x-text="t('next')"></span>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#chevron-right"></use>
+                  </svg>
+                </button>
+              </nav>
+            </div>
+          </div>
+        </template>
+      </section>
+      <footer class="workspace-footer">
+        <span>Signal by Obsidia</span>
+        <span x-text="t('independent')"></span>
+      </footer>
+    </main>
+  </div>
+</div>

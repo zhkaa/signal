@@ -1,16 +1,28 @@
-/* Общая палитра и размеры. Здесь меняется визуальная основа проекта. */
 :root {
-  --color-paper: #f7f8f5;
-  --color-surface: #ffffff;
-  --color-ink: #191b18;
-  --color-muted: #687062;
-  --color-line: #dddcd5;
-  --color-lime: #b7ef35;
-  --color-hero: #20271f;
-  --color-on-dark: #f5f7f0;
-  --color-muted-on-dark: #bec8b7;
-  --color-accent-soft: #edf4df;
-  --radius: 8px;
-  --content-width: 1280px;
-  --font-body: 'Manrope Variable', Arial, sans-serif;
+  --primary: #2459e0;
+  --primary-hover: #1849c5;
+  --ink: #25292e;
+  --muted: #646c7b;
+  --background: #f5f6f8;
+  --surface: #ffffff;
+  --border: #dce1e9;
+  --sky: #eaf1ff;
+  --danger: #b72e40;
+  --success: #16734b;
+  --font: 'Geologica Variable', Arial, sans-serif;
+  --radius: 12px;
+  --radius-card: 24px;
+  --radius-pill: 999px;
+  --page-max: 1200px;
+  --section-gap: 88px;
+  --scroll-thumb: #b9c2d1;
+  --scroll-track: #f5f6f8;
+  --scroll-hover: #8c98ab;
+  --scroll-active: #646c7b;
+  --peach: #fff1e8;
+  --lilac: #f1edff;
+  --mint: #e9f4ee;
+  --focus: #2459e0;
+  --control-height: 48px;
+  --transition: 160ms;
 }

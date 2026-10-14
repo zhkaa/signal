@@ -1,0 +1,381 @@
+<div x-show="page==='landing'" class="landing">
+  <div class="top-strip">
+    <span class="mini-dot"></span>
+    <span x-text="t('strap')"></span>
+  </div>
+  <header class="public-header container">
+    <a class="brand" href="/" @click="link($event, '/')">
+      <svg viewBox="0 0 32 32" aria-hidden="true" class="brand-mark">
+        <path
+          d="M4 21V11m8 15V6m8 18V8m8 13V11"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="4"
+          stroke-linecap="round"
+        />
+      </svg>
+      <span>
+        signal
+        <span class="brand-dot">.</span>
+      </span>
+    </a>
+    <nav class="public-nav" :aria-label="t('tools')">
+      <a href="#tools" x-text="t('tools')"></a>
+      <a href="#how" x-text="t('how')"></a>
+      <a href="#faq" x-text="t('faq')"></a>
+    </nav>
+    <div class="header-actions">
+      <button
+        type="button"
+        class="language-button"
+        @click="toggleLocale()"
+        :aria-label="t('language')"
+      >
+        <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#globe"></use></svg>
+        <span x-text="locale.toUpperCase()"></span>
+      </button>
+      <a
+        href="/login"
+        class="button small neutral"
+        @click="link($event,'/login')"
+        x-show="!user"
+        x-text="t('login')"
+      ></a>
+      <a
+        href="/app/dashboard"
+        class="button small neutral"
+        @click="link($event,'/app/dashboard')"
+        x-show="user"
+        x-text="t('workspace')"
+      ></a>
+    </div>
+  </header>
+  <main id="main-content" class="container landing-main">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow-pill">
+          <svg class="icon" aria-hidden="true">
+            <use href="/assets/icons.svg#circle-play"></use>
+          </svg>
+          <span x-text="t('badge')"></span>
+        </div>
+        <h1>
+          <span x-text="t('hero1')"></span>
+          <br />
+          <span class="hero-accent" x-text="t('hero2')"></span>
+        </h1>
+        <p class="hero-description" x-text="t('heroText')"></p>
+        <div class="hero-actions">
+          <a
+            href="/register"
+            class="button neutral large"
+            @click="link($event,user?'/app/dashboard':'/register')"
+          >
+            <span x-text="t('start')"></span>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#arrow-up-right"></use>
+            </svg>
+          </a>
+          <a href="#tools" class="text-link">
+            <span x-text="t('explore')"></span>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#arrow-right"></use>
+            </svg>
+          </a>
+        </div>
+        <p class="hero-note">
+          <svg class="icon" aria-hidden="true">
+            <use href="/assets/icons.svg#check-check"></use>
+          </svg>
+          <span x-text="t('heroNote')"></span>
+        </p>
+      </div>
+      <div class="hero-visual">
+        <img
+          src="/assets/signal-discovery.png"
+          width="1536"
+          height="1024"
+          alt=""
+          fetchpriority="high"
+        />
+        <div class="visual-label label-idea">
+          <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#lightbulb"></use></svg>
+          <span x-text="t('idea')"></span>
+        </div>
+        <div class="visual-label label-ready">
+          <span class="check-circle">
+            <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#check"></use></svg>
+          </span>
+          <span x-text="t('prepare')"></span>
+        </div>
+        <div class="visual-caption">
+          <span x-text="'signal / '+t('researchWord')"></span>
+          <span>→</span>
+          <span x-text="t('createWord')"></span>
+        </div>
+      </div>
+    </section>
+    <div class="workflow-strip">
+      <div>
+        <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#search"></use></svg>
+        <span x-text="t('niches')"></span>
+      </div>
+      <span>→</span>
+      <div>
+        <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#users-round"></use></svg>
+        <span x-text="t('competitors')"></span>
+      </div>
+      <span>→</span>
+      <div>
+        <svg class="icon" aria-hidden="true">
+          <use href="/assets/icons.svg#sliders-horizontal"></use>
+        </svg>
+        <span x-text="t('optimizer')"></span>
+      </div>
+      <span>→</span>
+      <div>
+        <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#folder-open"></use></svg>
+        <span x-text="t('projects')"></span>
+      </div>
+    </div>
+    <section id="tools" class="marketing-section">
+      <div class="section-intro">
+        <div>
+          <p class="eyebrow">
+            SIGNAL /
+            <span x-text="t('tools')"></span>
+          </p>
+          <h2 x-text="t('oneDesk')"></h2>
+        </div>
+        <p x-text="t('oneDeskText')"></p>
+      </div>
+      <div class="feature-grid">
+        <a
+          class="feature-card blue"
+          href="/register"
+          @click="link($event,user?'/app/niches':'/register')"
+        >
+          <span class="feature-icon">
+            <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#search"></use></svg>
+          </span>
+          <h3 x-text="t('niches')"></h3>
+          <p x-text="t('nichesText')"></p>
+          <span class="card-arrow">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#arrow-up-right"></use>
+            </svg>
+          </span>
+        </a>
+        <a
+          class="feature-card peach"
+          href="/register"
+          @click="link($event,user?'/app/optimizer':'/register')"
+        >
+          <span class="feature-icon">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#sliders-horizontal"></use>
+            </svg>
+          </span>
+          <h3 x-text="t('optimizer')"></h3>
+          <p x-text="t('optimizerText')"></p>
+          <span class="card-arrow">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#arrow-up-right"></use>
+            </svg>
+          </span>
+        </a>
+        <a
+          class="feature-card lilac"
+          href="/register"
+          @click="link($event,user?'/app/competitors':'/register')"
+        >
+          <span class="feature-icon">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#users-round"></use>
+            </svg>
+          </span>
+          <h3 x-text="t('competitors')"></h3>
+          <p x-text="t('competitorsText')"></p>
+          <span class="card-arrow">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#arrow-up-right"></use>
+            </svg>
+          </span>
+        </a>
+        <a
+          class="feature-card mint"
+          href="/register"
+          @click="link($event,user?'/app/projects':'/register')"
+        >
+          <span class="feature-icon">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#folder-open"></use>
+            </svg>
+          </span>
+          <h3 x-text="t('projects')"></h3>
+          <p x-text="t('projectsText')"></p>
+          <span class="card-arrow">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#arrow-up-right"></use>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </section>
+    <section id="how" class="how-section">
+      <div class="how-copy">
+        <p class="eyebrow" x-text="t('previewLabel')"></p>
+        <h2 x-text="t('previewTitle')"></h2>
+        <p x-text="t('previewText')"></p>
+        <a
+          href="/register"
+          class="button neutral"
+          @click="link($event,user?'/app/dashboard':'/register')"
+        >
+          <span x-text="t('start')"></span>
+          <svg class="icon" aria-hidden="true">
+            <use href="/assets/icons.svg#arrow-right"></use>
+          </svg>
+        </a>
+      </div>
+      <div class="process-panel">
+        <div class="process-header">
+          <a class="brand" href="/" @click="link($event, '/')">
+            <svg viewBox="0 0 32 32" aria-hidden="true" class="brand-mark">
+              <path
+                d="M4 21V11m8 15V6m8 18V8m8 13V11"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span>
+              signal
+              <span class="brand-dot">.</span>
+            </span>
+          </a>
+          <span class="process-badge" x-text="t('forYou')"></span>
+        </div>
+        <ol class="process-list">
+          <li>
+            <span class="step-number">1</span>
+            <div>
+              <h3 x-text="t('step1')"></h3>
+              <p x-text="t('step1Text')"></p>
+            </div>
+            <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#target"></use></svg>
+          </li>
+          <li>
+            <span class="step-number">2</span>
+            <div>
+              <h3 x-text="t('step2')"></h3>
+              <p x-text="t('step2Text')"></p>
+            </div>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#users-round"></use>
+            </svg>
+          </li>
+          <li>
+            <span class="step-number">3</span>
+            <div>
+              <h3 x-text="t('step3')"></h3>
+              <p x-text="t('step3Text')"></p>
+            </div>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#circle-check"></use>
+            </svg>
+          </li>
+        </ol>
+        <div class="process-foot">
+          <svg class="icon" aria-hidden="true">
+            <use href="/assets/icons.svg#folder-open"></use>
+          </svg>
+          <span x-text="t('heroNote')"></span>
+        </div>
+      </div>
+    </section>
+    <section id="faq" class="marketing-section faq-section">
+      <div>
+        <p class="eyebrow">SIGNAL / FAQ</p>
+        <h2 x-text="t('faq')"></h2>
+      </div>
+      <div class="faq-list">
+        <details open>
+          <summary>
+            <span x-text="t('faq1')"></span>
+            <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#plus"></use></svg>
+          </summary>
+          <p x-text="t('faq1a')"></p>
+        </details>
+        <details>
+          <summary>
+            <span x-text="t('faq2')"></span>
+            <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#plus"></use></svg>
+          </summary>
+          <p x-text="t('faq2a')"></p>
+        </details>
+        <details>
+          <summary>
+            <span x-text="t('faq3')"></span>
+            <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#plus"></use></svg>
+          </summary>
+          <p x-text="t('faq3a')"></p>
+        </details>
+        <details>
+          <summary>
+            <span x-text="t('faq4')"></span>
+            <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#plus"></use></svg>
+          </summary>
+          <p x-text="t('faq4a')"></p>
+        </details>
+      </div>
+    </section>
+    <section class="cta-section">
+      <div>
+        <p class="eyebrow" x-text="t('forYou')"></p>
+        <h2 x-text="t('ctaTitle')"></h2>
+        <p x-text="t('ctaText')"></p>
+      </div>
+      <a
+        href="/register"
+        class="button neutral large"
+        @click="link($event,user?'/app/dashboard':'/register')"
+      >
+        <span x-text="t('start')"></span>
+        <svg class="icon" aria-hidden="true">
+          <use href="/assets/icons.svg#arrow-up-right"></use>
+        </svg>
+      </a>
+    </section>
+  </main>
+  <footer class="public-footer container">
+    <div>
+      <a class="brand" href="/" @click="link($event, '/')">
+        <svg viewBox="0 0 32 32" aria-hidden="true" class="brand-mark">
+          <path
+            d="M4 21V11m8 15V6m8 18V8m8 13V11"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="4"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span>
+          signal
+          <span class="brand-dot">.</span>
+        </span>
+      </a>
+      <p x-text="t('tagline')"></p>
+    </div>
+    <div class="footer-links">
+      <a href="#tools" x-text="t('tools')"></a>
+      <a href="#how" x-text="t('how')"></a>
+      <a href="#faq" x-text="t('faq')"></a>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Signal by Obsidia</span>
+      <span x-text="t('independent')"></span>
+    </div>
+  </footer>
+</div>

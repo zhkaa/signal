@@ -4,6 +4,34 @@ import { resolve } from 'node:path';
 /** Локальные ресурсы: Lucide, Manrope для интерфейса и Space Grotesk для логотипа. */
 export async function buildVendorAssets(root) {
   const names = [
+    'globe',
+    'chevron-right',
+    'chevron-down',
+    'check',
+    'check-check',
+    'eye',
+    'eye-off',
+    'log-out',
+    'settings',
+    'shield-check',
+    'circle-play',
+    'target',
+    'lightbulb',
+    'sliders-horizontal',
+    'trash-2',
+    'copy',
+    'arrow-left',
+    'mail',
+    'loader-circle',
+    'video',
+    'radio',
+    'user-round',
+    'refresh-cw',
+    'circle-check',
+    'circle-alert',
+    'link',
+    'chevron-left',
+    'activity',
     'layout-dashboard',
     'sparkles',
     'users-round',
@@ -58,5 +86,14 @@ export async function buildVendorAssets(root) {
     resolve(root, 'public/css/fonts.css'),
     css.replaceAll('./files/', '/assets/fonts/') +
       `\n/* Шрифт только для латинской надписи Signal. */\n@font-face {\n  font-family: 'Space Grotesk Variable';\n  font-style: normal;\n  font-display: swap;\n  font-weight: 300 700;\n  src: url('/assets/fonts/${wordmarkFile}') format('woff2');\n}\n`,
+  );
+  const geologica = resolve(root, 'node_modules/@fontsource-variable/geologica');
+  const geologicaCss = await readFile(resolve(geologica, 'index.css'), 'utf8');
+  for (const match of geologicaCss.matchAll(/\.\/files\/([^)]*)/g))
+    await copyFile(resolve(geologica, 'files', match[1]), resolve(assets, 'fonts', match[1]));
+  await copyFile(resolve(geologica, 'LICENSE'), resolve(assets, 'fonts/geologica-LICENSE.txt'));
+  await writeFile(
+    resolve(root, 'public/css/fonts.css'),
+    geologicaCss.replaceAll('./files/', '/assets/fonts/'),
   );
 }
